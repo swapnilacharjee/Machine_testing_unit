@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reset Database</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 16px; }
+        button { padding: 14px 32px; border-radius: 10px; border: none; font-size: 16px; cursor: pointer; font-weight: 600; }
+        .del { background: #ef4444; color: white; }
+        .del:hover { background: #dc2626; }
+        #log { background: #1e293b; padding: 16px; border-radius: 10px; min-width: 320px; font-size: 13px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <h2>⚠️ Reset PC Monitor Data</h2>
+    <button class="del" onclick="resetEnergy()">Delete Energy Data</button>
+    <button class="del" onclick="resetAll()">Delete ALL Data</button>
+    <div id="log">Waiting...</div>
+
+<script>
+    const DB  = "https://testing-pc-5d796-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const KEY = "r9B6FUMY9N1b4Nvs8iNuIuOH5qy67kPPHJNaazEM";
+    const log = document.getElementById('log');
+
+    function resetEnergy() {
+        Promise.all([
+            fetch(`${DB}/PC_Monitor/energy.json?auth=${KEY}`,          { method: "DELETE" }),
+            fetch(`${DB}/PC_Monitor/energy_history.json?auth=${KEY}`,  { method: "DELETE" })
+        ]).then(() => {
+            log.innerText = "✅ Energy data deleted! ESP32 restart করুন।";
+            log.style.color = "#22c55e";
+        }).catch(e => { log.innerText = "❌ Error: " + e; log.style.color = "#ef4444"; });
+    }
+
+    function resetAll() {
+        fetch(`${DB}/PC_Monitor.json?auth=${KEY}`, { method: "DELETE" })
+        .then(() => {
+            log.innerText = "✅ All data deleted! ESP32 restart করুন।";
+            log.style.color = "#22c55e";
+        }).catch(e => { log.innerText = "❌ Error: " + e; log.style.color = "#ef4444"; });
+    }
+</script>
+</body>
+</html>
